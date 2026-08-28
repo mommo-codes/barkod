@@ -1,5 +1,5 @@
 {
-  "name": "barkod",
+  "name": "@mommo-codes/barkod",
   "version": "0.1.0",
   "description": "GTIN parsing, canonicalisation, match keys and GS1 classification. Compiled from Rust to WebAssembly.",
   "license": "MIT",
@@ -14,7 +14,8 @@
   },
   "files": [
     "dist",
-    "wasm"
+    "wasm",
+    "README.md"
   ],
   "keywords": [
     "gtin",
@@ -28,7 +29,7 @@
     "url": "git+https://github.com/mommo-codes/barkod.git"
   },
   "scripts": {
-    "build:wasm": "wasm-pack build .. --target web --out-dir npm/wasm --out-name barkod_wasm",
+    "build:wasm": "wasm-pack build .. --target web --out-dir npm/wasm --out-name barkod_wasm && rm -f wasm/.gitignore",
     "build:ts": "tsc -p tsconfig.json",
     "build": "npm run build:wasm && npm run build:ts",
     "test": "npm run build && npm run typecheck && node --test \"test/*.test.mjs\"",

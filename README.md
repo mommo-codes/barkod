@@ -157,16 +157,19 @@ Classification is split in two, on purpose:
 ## Install
 
 ```sh
-cargo add barkod        # Rust
-pip install barkod      # Python — abi3 wheels, 3.8+
-npm install barkod      # TypeScript — WebAssembly, ~40KB
+cargo add barkod                  # Rust
+pip install barkod                # Python — abi3 wheels, 3.8+
+npm install @mommo-codes/barkod   # TypeScript — WebAssembly, ~40KB
 ```
+
+The npm package is scoped because npm rejects the bare name `barkod` as too
+similar to `marked`. The crate and the Python package are unscoped.
 
 The TypeScript build loads wasm, so it needs one `await init()` at start-up.
 Every function throws until that resolves rather than returning a placeholder.
 
 ```ts
-import * as barkod from "barkod";
+import * as barkod from "@mommo-codes/barkod";
 await barkod.init();
 barkod.storeForm("7350053850019"); // "07350053850019"
 ```

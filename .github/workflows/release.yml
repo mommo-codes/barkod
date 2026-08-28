@@ -36,7 +36,11 @@ jobs:
           pattern: wheels-*
           merge-multiple: true
           path: dist
+      # A release may be re-run to fix one registry without the others
+      # having to be un-published. Already-uploaded files are not an error.
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
 
   npm:
     name: Publish to npm
@@ -71,5 +75,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      # Same reasoning as PyPI's skip-existing: a re-run to fix npm must not
+      # fail here just because this version is already out.
       - name: Publish the core only
-        run: cargo publish -p barkod --token ${{ secrets.CARGO_TOKEN }}
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 \
+            | python3 -c "import json,sys; print(next(p['version'] for p in json.load(sys.stdin)['packages'] if p['name']=='barkod'))")
+          if curl -sf "https://crates.io/api/v1/crates/barkod/$VERSION" \
+               -H "User-Agent: barkod-release" > /dev/null; then
+            echo "barkod $VERSION is already on crates.io — nothing to do."
+            exit 0
+          fi
+          cargo publish -p barkod --token ${{ secrets.CARGO_TOKEN }}
