@@ -1,0 +1,121 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rust:
+    name: Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --all -- --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace
+
+      # The core's zero-dependency guarantee is the kind of invariant that
+      # quietly stops being true, so it is asserted rather than intended.
+      # `cargo tree` prints one line when nothing is depended on.
+      - name: The core has no dependencies
+        run: |
+          lines=$(cargo tree -p barkod --edges normal --prefix none | grep -c .)
+          if [ "$lines" -ne 1 ]; then
+            echo "barkod has gained a dependency:"
+            cargo tree -p barkod --edges normal
+            exit 1
+          fi
+          echo "barkod depends on nothing."
+
+  fuzz:
+    name: Fuzz
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --locked
+
+      # A smoke run, not a campaign. Sixty seconds against the committed seed
+      # corpus catches a regression that breaks an invariant on ordinary
+      # input; finding genuinely new bugs needs a long run, which belongs on a
+      # schedule rather than on every push.
+      #
+      # The target asserts every invariant the library promises, so a failure
+      # here is a wrong answer, not only a crash.
+      # fuzz/corpus is gitignored, so it does not exist on a fresh checkout.
+      - name: Fuzz parse for 60s
+        run: |
+          mkdir -p fuzz/corpus/parse
+          cargo fuzz run parse fuzz/corpus/parse fuzz/seeds/parse -- -max_total_time=60
+
+      - name: Upload any crash it found
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-artifacts
+          path: fuzz/artifacts/
+
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install
+        run: pip install pytest
+
+      # `pip install .` drives the maturin build backend and installs the
+      # wheel. `maturin develop` would be the local-development equivalent,
+      # but it requires an active virtualenv, and the runner has none.
+      - name: Build and test
+        working-directory: barkod-py
+        run: |
+          pip install .
+          pytest tests/ -q
+
+      # The corpus a hand-written port elsewhere replays against. Generating
+      # it here means a change to barkod's behaviour shows up as a diff.
+      - name: Export the conformance corpus
+        run: python conformance/export_corpus.py > /dev/null
+
+  typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      # `npm test` is build + typecheck + node. The typecheck matters as much
+      # as the tests: src/types.test-d.ts asserts with @ts-expect-error that a
+      # GtinKey cannot be assigned where a GTIN belongs, so the build fails if
+      # that guarantee ever stops holding.
+      - name: Build and test
+        working-directory: barkod-wasm/npm
+        run: |
+          npm install
+          npm test

@@ -1,0 +1,21 @@
+[package]
+name = "barkod"
+description = "GTIN parsing, canonicalisation, match keys and GS1 classification. One implementation, callable from Rust, Python and TypeScript."
+keywords = ["gtin", "ean", "upc", "barcode", "gs1"]
+categories = ["parser-implementations", "encoding"]
+readme = "../README.md"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+# Deliberately empty, and it stays that way. barkod is pure computation over a
+# string of digits: no data files, no registries, no I/O, no clock. See
+# docs/no-data.md for why that is a design constraint rather than an accident.
+[dependencies]
+
+# Dev-dependencies do not propagate to consumers, so the zero-dependency
+# guarantee above still holds for anyone who depends on barkod.
+[dev-dependencies]
+proptest = "1"

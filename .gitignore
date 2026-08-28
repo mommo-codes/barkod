@@ -1,0 +1,25 @@
+/target
+**/*.rs.bk
+Cargo.lock.orig
+
+# Python bindings
+barkod-py/.venv/
+**/__pycache__/
+*.py[cod]
+*.so
+*.pyd
+.pytest_cache/
+dist/
+
+# WASM bindings
+barkod-wasm/pkg/
+barkod-wasm/npm/wasm/
+barkod-wasm/npm/dist/
+package-lock.json
+node_modules/
+
+# Fuzzing
+fuzz/target/
+fuzz/corpus/
+fuzz/artifacts/
+fuzz/coverage/

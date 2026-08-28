@@ -1,0 +1,10 @@
+# PyO3 extension modules expect the Python interpreter to provide the `_Py*`
+# symbols at load time, so the cdylib build must not try to resolve them at
+# link time. maturin sets these flags automatically for wheel builds; plain
+# `cargo build` / `cargo test` on macOS need them set here.
+
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"]

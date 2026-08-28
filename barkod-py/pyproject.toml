@@ -1,0 +1,29 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "barkod"
+dynamic = ["version"]
+requires-python = ">=3.8"
+description = "GTIN parsing, canonicalisation, match keys and GS1 classification. Written in Rust."
+readme = "README.md"
+license = { text = "MIT" }
+keywords = ["gtin", "ean", "upc", "barcode", "gs1"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+    "Intended Audience :: Developers",
+]
+
+[project.urls]
+Homepage = "https://github.com/mommo-codes/barkod"
+Repository = "https://github.com/mommo-codes/barkod"
+
+[tool.maturin]
+python-source = "python"
+module-name = "barkod._barkod"
+features = ["pyo3/extension-module"]

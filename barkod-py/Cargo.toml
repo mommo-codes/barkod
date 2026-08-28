@@ -1,0 +1,18 @@
+[package]
+name = "barkod-py"
+description = "Python bindings for barkod."
+publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+name = "_barkod"
+crate-type = ["cdylib"]
+
+[dependencies]
+# The binding depends on the core. The core does not know this crate exists,
+# which is the point: PyO3 never reaches the shared implementation.
+barkod = { path = "../barkod", version = "0.1.0" }
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py38"] }

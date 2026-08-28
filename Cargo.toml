@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["barkod", "barkod-py", "barkod-wasm"]
+# cargo-fuzz needs nightly; keep it out of the stable workspace build.
+exclude = ["fuzz"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/mommo-codes/barkod"
+homepage = "https://github.com/mommo-codes/barkod"
+
+# The core crate must never gain a runtime dependency — see docs/no-data.md.
+# `cargo tree -p barkod --edges normal` is asserted to be a single line in CI.
