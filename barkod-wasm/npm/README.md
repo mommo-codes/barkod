@@ -12,6 +12,8 @@ The [crate](https://crates.io/crates/barkod) and the
 npm install @mommo-codes/barkod
 ```
 
+The scoped package starts at 0.1.1; there is no 0.1.0 on npm.
+
 ```ts
 import * as barkod from "@mommo-codes/barkod";
 

@@ -156,6 +156,10 @@ Classification is split in two, on purpose:
 
 ## Install
 
+> **Use 0.1.1 or later.** 0.1.0 is published but was released from three
+> slightly different trees, and the npm package does not exist under it. See
+> [CHANGELOG.md](CHANGELOG.md).
+
 ```sh
 cargo add barkod                  # Rust
 pip install barkod                # Python — abi3 wheels, 3.8+

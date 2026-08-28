@@ -1,6 +1,6 @@
 {
   "name": "@mommo-codes/barkod",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "GTIN parsing, canonicalisation, match keys and GS1 classification. Compiled from Rust to WebAssembly.",
   "license": "MIT",
   "type": "module",
