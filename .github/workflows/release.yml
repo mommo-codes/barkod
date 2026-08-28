@@ -60,11 +60,20 @@ jobs:
       # npm silently installs the repository root for a `github:` dependency,
       # and this repository's root is a Cargo workspace with no package.json.
       # The failure mode would be a successful install of nothing.
+      # Same reasoning as crates.io and PyPI: a re-run to fix one registry
+      # must not fail on the ones that already succeeded. npm returns 403 for
+      # an existing version, which is indistinguishable from a real refusal.
       - name: Build and publish
         working-directory: barkod-wasm/npm
         run: |
           npm install
           npm run build
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version > /dev/null 2>&1; then
+            echo "$NAME@$VERSION is already on npm — nothing to do."
+            exit 0
+          fi
           npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
