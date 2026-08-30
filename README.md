@@ -156,8 +156,9 @@ Classification is split in two, on purpose:
 
 ## Install
 
-> **Use 0.1.1 or later.** 0.1.0 is published but was released from three
-> slightly different trees, and the npm package does not exist under it. See
+> **Use 0.1.2 or later.** 0.1.0 was released from three slightly different
+> trees and has no npm package; 0.1.1 shipped no Linux wheel for arm64, so
+> `pip install` fails inside a container on Apple Silicon. See
 > [CHANGELOG.md](CHANGELOG.md).
 
 ```sh
@@ -165,6 +166,11 @@ cargo add barkod                  # Rust
 pip install barkod                # Python — abi3 wheels, 3.8+
 npm install @mommo-codes/barkod   # TypeScript — WebAssembly, ~40KB
 ```
+
+Python wheels are built for linux x86_64 and aarch64, macOS arm64, and
+Windows x86_64. There is no sdist: without a matching wheel there is nothing
+to fall back on, so a missing target is a hard failure rather than a slow
+build. Adding one is a line in the release matrix.
 
 The npm package is scoped because npm rejects the bare name `barkod` as too
 similar to `marked`. The crate and the Python package are unscoped.

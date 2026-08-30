@@ -21,14 +21,14 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
 name = "barkod"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "proptest",
 ]
 
 [[package]]
 name = "barkod-py"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "barkod",
  "pyo3",
@@ -36,7 +36,7 @@ dependencies = [
 
 [[package]]
 name = "barkod-wasm"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "barkod",
  "wasm-bindgen",
